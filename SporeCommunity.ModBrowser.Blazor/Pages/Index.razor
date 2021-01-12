@@ -1,0 +1,66 @@
+﻿@page "/"
+@using GithubApi
+
+<MainNavButtons />
+
+
+<input @bind="searchTerm" placeholder="Search for mods">
+<button @onclick="@ExecuteSearch" disabled=@isLoading>Search</button>
+
+@if (isLoading)
+{
+<LoadingSpinner />
+}
+else
+{
+    if (errorMessage is not null)
+    {
+<p class="accent-orange">There was an error searching for mods.</p>
+<p class="accent-orange">For help, visit the Discord above, and provide all of the information below.</p>
+<SupportInformation />
+<p>@errorMessage</p>
+}
+    else if (mods.Count == 0)
+    {
+<p>No mods were found. Try using different search terms.</p>
+}
+    else
+    {
+<p>Showing @mods.Count mods</p>
+@foreach (var mod in mods)
+        {
+<ModListingComponent Mod="@mod" />
+}
+    }
+}
+
+@code {
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+    private GithubModSearchEngine github = new("Spore-Community/ModBrowser");
+
+    private string searchTerm = "";
+
+    private List<ModListing> mods = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ExecuteSearch();
+    }
+
+    private async Task ExecuteSearch()
+    {
+        isLoading = true;
+        try
+        {
+            mods = await github.SearchModsAsync(searchTerm);
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+        isLoading = false;
+    }
+}

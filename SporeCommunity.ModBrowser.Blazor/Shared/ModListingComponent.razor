@@ -1,0 +1,118 @@
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IJSRuntime JS;
+
+<div class="mod-listing">
+    @if (Mod is not null)
+    {
+        <h2>@Mod.DisplayName<span>By @Mod.Author</span></h2>
+
+        <p class="mod-version">Updated @Updated (version @Mod.Version)</p>
+
+        <p>@Mod.Description</p>
+
+        <ul>
+            @if (Mod.IsExperimental)
+            {
+                <li class="accent-orange">Experimental</li>
+            }
+            @if (true || Mod.RequiresGalaxyReset)
+            {
+                <li class="accent-orange">Requires Galaxy Reset</li>
+            }
+            @if (true || Mod.CausesSaveDataDependency)
+            {
+                <li class="accent-orange">Causes Save Data Dependency</li>
+            }
+        </ul>
+
+        <div class="mod-buttons">
+            @if (Mod.RepositoryUrl is not null)
+            {
+                <a target="_blank" rel="noopener noreferrer" href="@Mod.RepositoryUrl"><button>GitHub</button></a>
+            }
+            @if (Mod.ProjectUrl is not null)
+            {
+                <a target="_blank" rel="noopener noreferrer" href="@Mod.ProjectUrl"><button>Website</button></a>
+            }
+            @if (Mod.DownloadUrl is not null)
+            {
+                <button class="accent-green-bg" @onclick="OpenDownloadDialog">Download</button>
+            }
+        </div>
+    }
+</div>
+
+@if (showDialog)
+{
+    <div class="page-cover"></div>
+    <div class="dialog">
+        <p>You must install the downloaded .sporemod file using the Spore ModAPI Easy Installer.</p>
+        <p>See the <a target="_blank" href="/installation">Mod Installation Guide</a> for details.</p>
+
+        @if(Mod!.IsExperimental)
+        {
+            <p class="accent-orange">This mod is experimental. It may contain bugs or other issues. Install at your own risk.</p>
+        }
+        @if(true || Mod!.RequiresGalaxyReset)
+        {
+            <p class="accent-orange">This mod requires a galaxy reset to take effect. This will erase your saved games.</p>
+        }
+        @if(true || Mod!.CausesSaveDataDependency)
+        {
+            <p class="accent-orange">This mod causes save data dependency. Uninstalling this mod may corrupt or damage your saved games.</p>
+        }
+
+        <input id="SuppressDownloadDialog" type="checkbox" @onchange="OnSuppressDialog"><label for="SuppressDownloadDialog">Don't show this message again</label>
+
+        <div>
+            <button @onclick="CloseDialog">Cancel</button>
+            <button class="accent-green-bg" @onclick="OpenDownloadUrl">Download Mod</button>
+        </div>
+    </div>
+}
+
+@code{
+    [Parameter]
+    public ModListing? Mod { get; init; }
+
+    [Parameter]
+    public DateTime Updated { get; init; } = DateTime.Now;
+
+    private async void OpenDownloadUrl()
+    {
+        CloseDialog();
+        await JS.InvokeVoidAsync("open", Mod!.DownloadUrl!);
+    }
+
+    private bool showDialog = false;
+
+    private static bool suppressDownloadDialog;
+
+    protected override async Task OnInitializedAsync()
+    {
+        suppressDownloadDialog = await localStorage.GetItemAsync<bool>("SuppressDownloadDialog");
+    }
+
+    private void OpenDownloadDialog()
+    {
+        if (suppressDownloadDialog)
+        {
+            OpenDownloadUrl();
+        }
+        else
+        {
+            showDialog = true;
+        }
+    }
+
+    private void CloseDialog()
+    {
+        showDialog = false;
+    }
+
+    private async void OnSuppressDialog(ChangeEventArgs args)
+    {
+        suppressDownloadDialog = (bool)args.Value!;
+        await localStorage.SetItemAsync<bool>("SuppressDownloadDialog", suppressDownloadDialog);
+    }
+}

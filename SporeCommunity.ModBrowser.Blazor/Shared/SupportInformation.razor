@@ -1,0 +1,19 @@
+@using System.Reflection
+@inject IJSRuntime JS;
+
+<h2>Support Information</h2>
+<p>@appVersion</p>
+<p>.NET @netVersion on @userAgent</p>
+
+@code{
+    private string? userAgent;
+
+    private string? appVersion = Assembly.GetExecutingAssembly().FullName;
+
+    private string netVersion = Environment.Version.ToString();
+
+    protected override async Task OnInitializedAsync()
+    {
+        userAgent = await JS.InvokeAsync<string>("getUserAgent");
+    }
+}

@@ -1,0 +1,15 @@
+﻿/* Reusable styles */
+
+.hidden {
+    display: none;
+}
+
+.columns {
+    display: flex;
+}
+
+    .columns div {
+        flex: 25%;
+        font-size: 14px;
+        padding: 0 4px;
+    }

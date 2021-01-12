@@ -1,0 +1,53 @@
+/* Mod listing styles */
+
+.mod-listing {
+    position: relative;
+    min-height: 124px;
+    margin: 16px 0;
+    padding: 8px 16px;
+    border: 1px var(--spore-neutral) solid;
+    border-radius: 24px;
+}
+
+.mod-listing h2 {
+    margin: 0;
+    font-family: var(--spore-body-font);
+}
+
+.mod-listing h2 span {
+    color: var(--spore-neutral);
+    font-size: 16px;
+    margin-left: 8px;
+}
+
+.mod-listing p {
+    margin: 4px 0;
+}
+
+.mod-listing p.mod-version {
+    color: var(--spore-neutral);
+    font-size: 14px;
+}
+
+.mod-listing ul {
+    padding: 0;
+}
+
+.mod-listing ul li {
+    display: inline;
+    margin: 4px 8px 4px 0;
+    padding: 4px 8px;
+    border: 1px var(--spore-accent-orange) solid;
+    border-radius: 32px;
+}
+
+.mod-listing .mod-buttons {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 128px;
+}
+.mod-listing .mod-buttons button {
+    width: 100%;
+    margin-bottom: 8px;
+}
