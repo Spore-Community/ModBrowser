@@ -3,7 +3,7 @@
   "config": [ ],
   "debugBuild": false,
   "entryAssembly": "SporeCommunity.ModBrowser.Blazor",
-  "icuDataMode": 0,
+  "icuDataMode": 2,
   "linkerEnabled": true,
   "resources": {
     "assembly": {
@@ -58,17 +58,12 @@
       "System.Text.Encodings.Web.dll": "sha256-VXrm\/GOkbDsv+QITY0afU6Vladx3kAXIXEFjVGYw4EM=",
       "System.Text.Json.dll": "sha256-3d4qitbG9ZmIM+RmuanMo0\/nx6a9XO1Qf6zm04waa\/0=",
       "System.Text.RegularExpressions.dll": "sha256-tlKILVSKnV4\/TYdUFSPy\/\/v6tFShhsSV6iRMZ2otN3k=",
-      "System.Private.CoreLib.dll": "sha256-M8N74504flB4rv1os+JyV4rQQvyJOnyLLTJCh7rN5qE="
+      "System.Private.CoreLib.dll": "sha256-mzFIpggNaHvi9WiZpnAoNLXATLiKpJE\/KVO8GcrLEiE="
     },
     "lazyAssembly": null,
     "pdb": null,
     "runtime": {
-      "dotnet.timezones.blat": "sha256-nXByiCO4+RYyh+A88TSSZDwAJMF7M7Up\/h6dfAA19C8=",
       "dotnet.wasm": "sha256-qUhgve+80Xc4EIDgHhHFKd9isV5eO+3U0y8ydLADj64=",
-      "icudt.dat": "sha256-m7NyeXyxM+CL04jr9ui1Z6pVfMWwhHusuz5qNZWpAwA=",
-      "icudt_CJK.dat": "sha256-91bygK5voY9lG5wxP0\/uj7uH5xljF9u7iWnSldT1Z\/g=",
-      "icudt_EFIGS.dat": "sha256-DPfeOLph83b2rdx40cKxIBcfVZ8abTWAFq+RBQMxGw0=",
-      "icudt_no_CJK.dat": "sha256-oM7Z6aN9jHmCYqDMCBwFgFAYAGgsH1jLC\/Z6DYeVmmk=",
       "dotnet.5.0.1.js": "sha256-SWZOE2EsCqc\/7dPgJrcFqUvVvdeJ9cipeZ2NFMC9v2s="
     },
     "satelliteResources": null
