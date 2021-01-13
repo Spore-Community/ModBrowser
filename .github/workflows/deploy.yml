@@ -1,7 +1,7 @@
 name: Build Spore Mod Browser and deploy to GitHub Pages
 
 env:
-  PUBLISH_PATH: ./bin/Release/netstandard2.1/publish/wwwroot
+  PUBLISH_PATH: bin/Release/net5.0/publish/wwwroot
 
 on:
   push:
