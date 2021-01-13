@@ -1,7 +1,7 @@
 name: Build Spore Mod Browser and deploy to GitHub Pages
 
 env:
-  PUBLISH_PATH: ${{ env.GITHUB_WORKSPACE }}/bin/Release/net5.0/publish/wwwroot
+  PUBLISH_PATH: bin/Release/net5.0/publish/wwwroot
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
     - name: Rewrite base href
       uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
       with:
-        html_path: ${{ env.PUBLISH_PATH }}/index.html
+        html_path: ${{ env.GITHUB_WORKSPACE }}/${{ env.PUBLISH_PATH }}/index.html
         base_href: /ModBrowser/
 
     - name: Deploy to GitHub Pages
