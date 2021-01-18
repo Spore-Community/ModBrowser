@@ -21,6 +21,7 @@ body {
     background: var(--spore-white);
     border-radius: 24px;
     padding: 16px 24px;
+    box-shadow: 0 0 24px 0 var(--spore-neutral) inset;
 }
 
 /* Header styles */
