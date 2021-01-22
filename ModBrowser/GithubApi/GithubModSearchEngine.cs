@@ -54,14 +54,14 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// <returns>The Mod Listing for the Spore mod.</returns>
         private async Task<ModListing> GetModListingFromRepositoryAsync(Repository repository)
         {
-            var modIdentity = await repository.GetModIdentity();
+            var modIdentity = await repository.GetModIdentityAsync();
 
             // TODO: Handle what happens when Mod Identity is not present or invalid
             //       - Exception for missing/invalid Mod Identity
             //       - Fill in description from GitHub is one is not present in Mod Identity
             //       - Future versions of Mod Identity may include repo URL
 
-            var listing = new ModListing(modIdentity, repository.Owner, repository.RepositoryUrl, repository.ProjectUrl, null);
+            var listing = new ModListing(modIdentity, repository.Owner, repository.RepositoryUrl, repository.ProjectUrl, await repository.GetDownloadUrlAsync());
             return listing;
         }
     }

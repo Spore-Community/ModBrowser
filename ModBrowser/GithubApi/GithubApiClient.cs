@@ -41,7 +41,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// <param name="endpoint">The endpoint to retrieve data from, with no leading slash.</param>
         /// <param name="query">The query string.</param>
         /// <returns>A JSON object representing the result.</returns>
-        private async Task<JObject> GetJsonAsync(string endpoint, string? query = null)
+        public async Task<JObject> GetJsonAsync(string endpoint, string? query = null)
         {
             // Build uri
             string uri = endpoint;
@@ -64,6 +64,11 @@ namespace SporeCommunity.ModBrowser.GithubApi
             return JObject.Parse(content);
         }
 
+        /// <summary>
+        /// Searches GitHub for repositories that match the specified search term.
+        /// </summary>
+        /// <param name="searchTerm">The term to search for. All GitHub search modifiers are allowed.</param>
+        /// <returns>A list of repositories matching the search term.</returns>
         public async Task<IEnumerable<Repository>> SearchForRepositoriesAsync(string searchTerm = "")
         {
             var endpoint = "search/repositories";
@@ -76,6 +81,21 @@ namespace SporeCommunity.ModBrowser.GithubApi
             var repoQuery = from repo in repos
                             select new Repository(this, repo);
             return repoQuery;
+        }
+
+        /// <summary>
+        /// Gets a repository by its name.
+        /// </summary>
+        /// <param name="repositoryOwner">The name of the repository's owner (username or organization name).</param>
+        /// <param name="repositoryName">The name of the repository.</param>
+        /// <returns>The repository.</returns>
+        public async Task<Repository> GetRepositoryAsync(string repositoryOwner, string repositoryName)
+        {
+            var endpoint = $"repos/{repositoryOwner}/{repositoryName}";
+            var json = await GetJsonAsync(endpoint);
+
+            var repo = new Repository(this, json);
+            return repo;
         }
 
         /// <summary>

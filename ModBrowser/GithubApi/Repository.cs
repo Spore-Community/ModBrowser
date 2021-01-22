@@ -43,10 +43,19 @@ namespace SporeCommunity.ModBrowser.GithubApi
         public DateTime Updated { get; init; }
         public Uri? ProjectUrl { get; init; }
 
-        private async Task<string> GetFile(string path) => await client.GetFileAsync(Owner, Name, path);
+        private async Task<string> GetFileAsync(string path) => await client.GetFileAsync(Owner, Name, path);
 
-        public async Task<XElement> GetModIdentity() => XElement.Parse(await GetFile("ModInfo.xml"));
+        public async Task<XElement> GetModIdentityAsync() => XElement.Parse(await GetFileAsync("ModInfo.xml"));
 
-        public async Task<string> GetReadme() => await GetFile("README.md");
+        public async Task<string> GetReadmeAsync() => await GetFileAsync("README.md");
+
+        public async Task<Uri?> GetDownloadUrlAsync()
+        {
+            var endpoint = $"repos/{Owner}/{Name}/releases/latest";
+            var json = await client.GetJsonAsync(endpoint);
+
+            var url = (string?)json["assets"]?[0]?["browser_download_url"];
+            return Uri.TryCreate(url, UriKind.Absolute, out var result) ? result : null;
+        }
     }
 }
