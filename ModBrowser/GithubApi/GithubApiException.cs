@@ -38,7 +38,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
             // Throw exception with message
             else
             {
-                throw new GithubApiException($"GitHub API error {StatusCode}: {GetApiError().Result}", this);
+                throw new GithubApiException($"GitHub API error {StatusCode}: {GetApiError().Result} \n {StackTrace}", this);
 
             }
         }

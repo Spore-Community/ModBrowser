@@ -52,10 +52,17 @@ namespace SporeCommunity.ModBrowser.GithubApi
         public async Task<Uri?> GetDownloadUrlAsync()
         {
             var endpoint = $"repos/{Owner}/{Name}/releases/latest";
-            var json = await client.GetJsonAsync(endpoint);
-
-            var url = (string?)json["assets"]?[0]?["browser_download_url"];
-            return Uri.TryCreate(url, UriKind.Absolute, out var result) ? result : null;
+            try
+            {
+                var json = await client.GetJsonAsync(endpoint);
+                var url = (string?)json["assets"]?[0]?["browser_download_url"];
+                return Uri.TryCreate(url, UriKind.Absolute, out var result) ? result : null;
+            }
+            catch
+            {
+                // Runs when no releases were found
+                return null;
+            }
         }
     }
 }
