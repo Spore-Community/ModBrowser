@@ -6,7 +6,14 @@
     {
         <h2>@Mod.DisplayName<span>By @Mod.Author</span></h2>
 
-        <p class="mod-version">Updated @Updated (version @Mod.Version)</p>
+        @if (Mod.Version is not null)
+        {
+            <p class="mod-version">Updated @Updated (version @Mod.Version)</p>
+        }
+        else
+        {
+            <p class="mod-version">Updated @Updated</p>
+        }
 
         <p>@Mod.Description</p>
 
@@ -23,6 +30,10 @@
             {
                 <li class="accent-orange">Causes Save Data Dependency</li>
             }
+            @if (Mod.DownloadUrl is null)
+            {
+                <li class="accent-orange">No Download Available</li>
+            }
         </ul>
 
         <div class="mod-buttons">
@@ -34,10 +45,7 @@
             {
                 <a target="_blank" rel="noopener noreferrer" href="@Mod.ProjectUrl"><button>Website</button></a>
             }
-            @if (Mod.DownloadUrl is not null)
-            {
-                <button class="accent-green-bg" @onclick="OpenDownloadDialog">Download</button>
-            }
+            <button class="accent-green-bg" @onclick="OpenDownloadDialog" disabled="@Mod.DownloadUrl is null">Download</button>
         </div>
     }
 </div>
