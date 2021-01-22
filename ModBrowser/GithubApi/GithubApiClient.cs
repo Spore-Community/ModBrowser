@@ -74,7 +74,8 @@ namespace SporeCommunity.ModBrowser.GithubApi
             var repos = (JArray)json["items"]!;
 
             var repoQuery = from repo in repos
-                            select new Repository(this)
+                            select new Repository(this, repo);
+                            /*select new Repository(this)
                             {
                                 // As long as the GitHub API is working as expected, these values cannot be null
                                 // But the compiler doesn't know that, so we need !
@@ -85,7 +86,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
                                 Created = DateTime.ParseExact((string)repo["created_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
                                 Updated = DateTime.ParseExact((string)repo["updated_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
                                 ProjectUrl = new Uri((string)repo["homepage"]!)
-                            };
+                            };*/
             return repoQuery;
         }
 
