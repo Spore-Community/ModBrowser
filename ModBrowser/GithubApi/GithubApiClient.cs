@@ -56,17 +56,6 @@ namespace SporeCommunity.ModBrowser.GithubApi
             // Make sure status code was 200 OK
             if (!result.IsSuccessStatusCode)
             {
-                /*// Check if rate limit exceeded
-                if (result.Headers.GetValues("x-ratelimit-remaining").FirstOrDefault() == "0")
-                {
-                    var rateLimit = result.Headers.GetValues("x-ratelimit-limit").First();
-                    var rateLimitReset = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(double.Parse(result.Headers.GetValues("x-ratelimit-reset").First())).ToLocalTime();
-
-                    var rateLimitResetDelta = DateTime.Now.Subtract(rateLimitReset);
-
-                    throw new Exception($"GitHub rate limit exceeded. The current limit is {rateLimit} and it resets at {rateLimitReset}. Try again in {-Math.Ceiling(rateLimitResetDelta.TotalSeconds)} seconds.");
-                }
-                throw new Exception($"GitHub API error {result.StatusCode}: {result.ReasonPhrase} - Response: {await result.Content.ReadAsStringAsync()} - Headers: {result.Headers}");*/
                 throw new GithubApiException(result);
             }
 
@@ -99,30 +88,6 @@ namespace SporeCommunity.ModBrowser.GithubApi
                             };
             return repoQuery;
         }
-
-        /*public async Task<IEnumerable<Repository>> SearchForSporeModRepositoriesAsync(string searchTerm = "")
-        {
-            // Restrict searches to repos that have the spore-mod topic
-            if (searchTerm.Length > 0) searchTerm += " ";
-            searchTerm += "topic:spore-mod";
-
-            var repos = await SearchForRepositoriesJsonAsync(searchTerm);
-
-            var repoQuery = from repo in repos
-                            select new Repository(this)
-                            {
-                                // As long as the GitHub API is working as expected, these values cannot be null
-                                // But the compiler doesn't know that, so we need !
-                                Name = (string)repo["name"]!,
-                                Owner = (string)repo["owner"]!["login"]!,
-                                RepositoryUrl = new Uri((string)repo["html_url"]!),
-                                Description = (string)repo["description"]!,
-                                Created = DateTime.ParseExact((string)repo["created_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
-                                Updated = DateTime.ParseExact((string)repo["updated_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
-                                ProjectUrl = new Uri((string)repo["homepage"]!)
-                            };
-            return repoQuery;
-        }*/
 
         /// <summary>
         /// Gets a raw file from the specified endpoint.
