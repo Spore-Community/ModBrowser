@@ -39,7 +39,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// Executes a GET request against the specified endpoint, with the specified query string.
         /// </summary>
         /// <param name="endpoint">The endpoint to retrieve data from, with no leading slash.</param>
-        /// <param name="query">The query string, does not need to be encoded.</param>
+        /// <param name="query">The query string.</param>
         /// <returns>A JSON object representing the result.</returns>
         private async Task<JObject> GetJsonAsync(string endpoint, string? query = null)
         {
@@ -47,7 +47,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
             string uri = endpoint;
             if (query != null)
             {
-                uri += "?" + query;//WebUtility.UrlEncode(query);
+                uri += "?" + query;
             }
 
             // Execute request
@@ -75,18 +75,6 @@ namespace SporeCommunity.ModBrowser.GithubApi
 
             var repoQuery = from repo in repos
                             select new Repository(this, repo);
-                            /*select new Repository(this)
-                            {
-                                // As long as the GitHub API is working as expected, these values cannot be null
-                                // But the compiler doesn't know that, so we need !
-                                Name = (string)repo["name"]!,
-                                Owner = (string)repo["owner"]!["login"]!,
-                                RepositoryUrl = new Uri((string)repo["html_url"]!),
-                                Description = (string)repo["description"]!,
-                                Created = DateTime.ParseExact((string)repo["created_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
-                                Updated = DateTime.ParseExact((string)repo["updated_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
-                                ProjectUrl = new Uri((string)repo["homepage"]!)
-                            };*/
             return repoQuery;
         }
 

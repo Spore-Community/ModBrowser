@@ -29,13 +29,11 @@ namespace SporeCommunity.ModBrowser.GithubApi
             Name = (string)jsonData["name"]!;
             Owner = (string)jsonData["owner"]!["login"]!;
             RepositoryUrl = new Uri((string)jsonData["html_url"]!);
-            Description = (string)jsonData["description"]!;
+            Description = (string?)jsonData["description"];
             Created = DateTime.ParseExact((string)jsonData["created_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
             Updated = DateTime.ParseExact((string)jsonData["updated_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-            ProjectUrl = new Uri((string)jsonData["homepage"]!);
+            ProjectUrl = Uri.TryCreate((string?)jsonData["homepage"], UriKind.Absolute, out var homepage) ? homepage : null;
         }
-
-        internal Repository(GithubApiClient client) => this.client = client;
 
         public string Name { get; init; }
         public string Owner { get; init; }
