@@ -102,8 +102,8 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// Gets a raw file from the specified endpoint.
         /// </summary>
         /// <param name="endpoint">The endpoint to access.</param>
-        /// <returns>A string containing the raw contents of the file.</returns>
-        public async Task<string> GetFileAsync(string endpoint)
+        /// <returns>A string containing the raw contents of the file, or null if the file did not exist.</returns>
+        public async Task<string?> GetFileAsync(string endpoint)
         {
             // Construct the request
             var request = new HttpRequestMessage()
@@ -118,6 +118,16 @@ namespace SporeCommunity.ModBrowser.GithubApi
             var result = await HttpClient.SendAsync(request);
             var content = await result.Content.ReadAsStringAsync();
 
+            // Make sure status code was 200 OK
+            if (!result.IsSuccessStatusCode)
+            {
+                if(result.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return null;
+                }
+                throw new GithubApiException(result);
+            }
+
             return content;
         }
 
@@ -127,8 +137,8 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// <param name="repositoryOwner">The name of the repository's owner (username or organization name).</param>
         /// <param name="repositoryName">The name of the repository.</param>
         /// <param name="path">The file path, with no leading slash.</param>
-        /// <returns>A string containing the raw contents of the file.</returns>
-        public async Task<string> GetFileAsync(string repositoryOwner, string repositoryName, string path)
+        /// <returns>A string containing the raw contents of the file, or null if the file did not exist.</returns>
+        public async Task<string?> GetFileAsync(string repositoryOwner, string repositoryName, string path)
         {
             var endpoint = $"repos/{repositoryOwner}/{repositoryName}/contents/{path}";
             return await GetFileAsync(endpoint);

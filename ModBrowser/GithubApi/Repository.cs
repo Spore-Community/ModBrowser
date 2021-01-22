@@ -43,11 +43,15 @@ namespace SporeCommunity.ModBrowser.GithubApi
         public DateTime Updated { get; init; }
         public Uri? ProjectUrl { get; init; }
 
-        private async Task<string> GetFileAsync(string path) => await client.GetFileAsync(Owner, Name, path);
+        private async Task<string?> GetFileAsync(string path) => await client.GetFileAsync(Owner, Name, path);
 
-        public async Task<XElement> GetModIdentityAsync() => XElement.Parse(await GetFileAsync("ModInfo.xml"));
+        public async Task<XElement?> GetModIdentityAsync()
+        {
+            var file = await GetFileAsync("ModInfo.xml");
+            return file is null ? null : XElement.Parse(file);
+        }
 
-        public async Task<string> GetReadmeAsync() => await GetFileAsync("README.md");
+        public async Task<string?> GetReadmeAsync() => await GetFileAsync("README.md");
 
         public async Task<Uri?> GetDownloadUrlAsync()
         {
