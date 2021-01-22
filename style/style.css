@@ -107,6 +107,10 @@ footer p {
     padding: 4px 0;
 }
 
+footer a {
+    color: var(--spore-cool);
+}
+
 /* Basic styles */
 
 p {
