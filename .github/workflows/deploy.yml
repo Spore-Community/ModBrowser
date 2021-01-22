@@ -15,6 +15,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - uses: actions/cache@v2
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
     - name: Publish with .NET
       run: dotnet publish -c Release -p:BlazorEnableCompression=false
       working-directory: ./SporeCommunity.ModBrowser.Blazor
