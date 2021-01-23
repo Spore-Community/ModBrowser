@@ -3,9 +3,10 @@
 
 <MainNavButtons />
 
-
-<input @bind="searchTerm" placeholder="Search for mods">
-<button @onclick="@ExecuteSearch" disabled=@isLoading>Search</button>
+<form @onsubmit="@ExecuteSearch">
+    <input @bind="searchTerm" placeholder="Search for mods">
+    <button type="submit" disabled=@isLoading>Search</button>
+</form>
 
 @if (isLoading)
 {
