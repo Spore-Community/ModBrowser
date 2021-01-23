@@ -66,8 +66,8 @@ namespace SporeCommunity.ModBrowser
             ModIdentity = new XmlModIdentity(xmlModIdentity);
 
             // Prefer version and description from Mod Identity, if present
-            Version ??= version;
-            Description ??= description;
+            Version = ModIdentity.ModVersion ?? version;
+            Description = ModIdentity.Description ?? description;
 
             Author = author;
 

@@ -126,7 +126,7 @@ namespace SporeCommunity.ModBrowser.ModIdentity
 
             Unique = ParseString("unique");
             DisplayName = ParseString("displayName");
-            Description = ParseOptionalString("displayName");
+            Description = ParseOptionalString("description");
 
             ModVersion = ParseOptionalVersion("modVersion"); // Prerelease, subject to change
             DllsBuild = ParseVersion("dllsBuild");
