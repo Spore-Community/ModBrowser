@@ -54,7 +54,7 @@
 {
     <div class="page-cover"></div>
     <div class="dialog">
-        <p>You must install the downloaded .sporemod or .package file using the Spore ModAPI Easy Installer.</p>
+        <p>Download @FileName and save it, and then install this file using the Spore ModAPI Easy Installer.</p>
         <p>See the <a href="installation">Mod Installation Guide</a> for details.</p>
 
         @if(Mod!.IsExperimental)
@@ -87,6 +87,8 @@
     public DateTime Updated { get; init; } = DateTime.Now;
 
     public bool IsDownloadUnavailable => Mod?.DownloadUrl is null;
+
+    public string? FileName => Mod?.DownloadUrl?.LocalPath;
 
     private async void OpenDownloadUrl()
     {
