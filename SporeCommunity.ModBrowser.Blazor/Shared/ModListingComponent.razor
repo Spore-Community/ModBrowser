@@ -22,11 +22,11 @@
             {
                 <li class="accent-orange">Experimental</li>
             }
-            @if (true || Mod.RequiresGalaxyReset)
+            @if (Mod.RequiresGalaxyReset)
             {
                 <li class="accent-orange">Requires Galaxy Reset</li>
             }
-            @if (true || Mod.CausesSaveDataDependency)
+            @if (Mod.CausesSaveDataDependency)
             {
                 <li class="accent-orange">Causes Save Data Dependency</li>
             }
@@ -61,11 +61,11 @@
         {
             <p class="accent-orange">This mod is experimental. It may contain bugs or other issues. Install at your own risk.</p>
         }
-        @if(true || Mod!.RequiresGalaxyReset)
+        @if(Mod!.RequiresGalaxyReset)
         {
             <p class="accent-orange">This mod requires a galaxy reset to take effect. This will erase your saved games.</p>
         }
-        @if(true || Mod!.CausesSaveDataDependency)
+        @if(Mod!.CausesSaveDataDependency)
         {
             <p class="accent-orange">This mod causes save data dependency. Uninstalling this mod may corrupt or damage your saved games.</p>
         }
