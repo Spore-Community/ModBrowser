@@ -35,13 +35,13 @@ namespace SporeCommunity.ModBrowser.GithubApi
             ProjectUrl = Uri.TryCreate((string?)jsonData["homepage"], UriKind.Absolute, out var homepage) ? homepage : null;
         }
 
-        public string Name { get; init; }
-        public string Owner { get; init; }
-        public Uri RepositoryUrl { get; init; }
-        public string? Description { get; init; }
-        public DateTime Created { get; init; }
-        public DateTime Updated { get; init; }
-        public Uri? ProjectUrl { get; init; }
+        public string Name { get; }
+        public string Owner { get; }
+        public Uri RepositoryUrl { get; }
+        public string? Description { get; }
+        public DateTime Created { get; }
+        public DateTime Updated { get; }
+        public Uri? ProjectUrl { get; }
 
         private async Task<string?> GetFileAsync(string path) => await client.GetFileAsync(Owner, Name, path);
 
@@ -53,14 +53,19 @@ namespace SporeCommunity.ModBrowser.GithubApi
 
         public async Task<string?> GetReadmeAsync() => await GetFileAsync("README.md");
 
-        public async Task<Uri?> GetDownloadUrlAsync()
+        public async Task<(Uri? url, string? version)?> GetDownloadAsync()
         {
             var endpoint = $"repos/{Owner}/{Name}/releases/latest";
             try
             {
                 var json = await client.GetJsonAsync(endpoint);
+
                 var url = (string?)json["assets"]?[0]?["browser_download_url"];
-                return Uri.TryCreate(url, UriKind.Absolute, out var result) ? result : null;
+                var uri = Uri.TryCreate(url, UriKind.Absolute, out var result) ? result : null;
+
+                var version = (string?)json["tag_name"];
+
+                return (url: uri, version);
             }
             catch
             {

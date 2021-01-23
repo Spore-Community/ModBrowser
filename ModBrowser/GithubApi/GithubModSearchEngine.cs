@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using SporeCommunity.ModBrowser.ModIdentity;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SporeCommunity.ModBrowser.GithubApi
@@ -25,7 +27,8 @@ namespace SporeCommunity.ModBrowser.GithubApi
             foreach (var repo in repos)
             {
                 var modListing = await GetModListingFromRepositoryAsync(repo);
-                mods.Add(modListing);
+                if (modListing is not null)
+                    mods.Add(modListing);
             }
 
             return mods;
@@ -51,18 +54,40 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// The ModInfo.xml file in the repository will be used to generate the mod listing.
         /// </summary>
         /// <param name="repository">The GitHub repository containing the Spore mod.</param>
-        /// <returns>The Mod Listing for the Spore mod.</returns>
-        private async Task<ModListing> GetModListingFromRepositoryAsync(Repository repository)
+        /// <returns>The Mod Listing for the Spore mod, or null if the repository does not contain a valid ModInfo.xml file.</returns>
+        private async Task<ModListing?> GetModListingFromRepositoryAsync(Repository repository)
         {
             var modIdentity = await repository.GetModIdentityAsync();
 
-            // TODO: Handle what happens when Mod Identity is not present or invalid
-            //       - Exception for missing/invalid Mod Identity
-            //       - Fill in description from GitHub is one is not present in Mod Identity
-            //       - Future versions of Mod Identity may include repo URL
+            // Get download info and URL
+            var download = await repository.GetDownloadAsync();
+            var downloadUrl = download?.url;
 
-            var listing = new ModListing(modIdentity, repository.Owner, repository.RepositoryUrl, repository.ProjectUrl, await repository.GetDownloadUrlAsync());
-            return listing;
+            // Get download version
+            var versionString = download?.version;
+            Version? version = null;
+            if(versionString is not null)
+            {
+                versionString = versionString.Replace("v", "").Trim();
+                Version.TryParse(versionString, out version);
+            }
+
+            if (modIdentity is null)
+            {
+                // Don't return a mod listing if Mod Identity is missing
+                return null;
+            }
+
+            try
+            {
+                var listing = new ModListing(modIdentity, version, repository.Description, repository.Owner, repository.RepositoryUrl, repository.ProjectUrl, downloadUrl);
+                return listing;
+            }
+            catch (ModAttributeException)
+            {
+                // Don't return a mod listing if Mod Identity is invalid
+                return null;
+            }
         }
     }
 }

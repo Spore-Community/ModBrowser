@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SporeCommunity.ModBrowser.ModIdentity;
+using System;
 using System.Xml.Linq;
 
 namespace SporeCommunity.ModBrowser
@@ -6,97 +7,78 @@ namespace SporeCommunity.ModBrowser
     public class ModListing
     {
         /// <summary>
-        /// The name of the mod, as shown to the user.
+        /// The Mod Identity for this mod. Contains most metadata about the mod.
         /// </summary>
-        public string DisplayName { get; init; }
+        public XmlModIdentity ModIdentity { get; }
 
         /// <summary>
-        /// The unique name of the mod, used internally.
+        /// The name of the mod, as shown to the user.
         /// </summary>
-        public string UniqueName { get; init; }
+        public string DisplayName => ModIdentity.DisplayName;
 
         /// <summary>
         /// The version number of this mod.
         /// </summary>
-        public Version? Version { get; init; }
+        public Version? Version { get; }
 
         /// <summary>
         /// A short description of this mod's features.
         /// </summary>
-        public string? Description { get; init; }
+        public string? Description { get; }
 
         /// <summary>
         /// The developer of this mod.
         /// </summary>
-        public string Author { get; init; }
-
-        /// <summary>
-        /// The version of this mod's XML Mod Identity.
-        /// </summary>
-        public Version InstallerSystemVersion { get; init; }
-
-        /// <summary>
-        /// The minimum version of the Spore ModAPI that is required for this mod.
-        /// </summary>
-        public Version DllsBuild { get; init; }
+        public string Author { get; }
 
         /// <summary>
         /// Whether the mod is experimental (work-in-progress/pre-release). If true, users should be warned before installing this mod.
         /// </summary>
-        public bool IsExperimental { get; init; }
+        public bool IsExperimental => ModIdentity.IsExperimental;
 
         /// <summary>
         /// Whether this mod requires a galaxy reset (save data reset) to take effect. If true, users should be warned before installing this mod.
         /// </summary>
-        public bool RequiresGalaxyReset { get; init; }
+        public bool RequiresGalaxyReset => ModIdentity.RequiresGalaxyReset;
 
         /// <summary>
         /// Whether saved games played with this mod will be unplayable or damaged, if this mod is uninstalled. If true, users should be warned before installing this mod.
         /// </summary>
-        public bool CausesSaveDataDependency { get; init; }
+        public bool CausesSaveDataDependency => ModIdentity.CausesSaveDataDependency;
 
         /// <summary>
         /// The Git repository for this mod.
         /// </summary>
-        public Uri RepositoryUrl { get; init; }
+        public Uri? RepositoryUrl { get; }
 
         /// <summary>
         /// The project website for this mod.
         /// </summary>
-        public Uri? ProjectUrl { get; init; }
+        public Uri? ProjectUrl { get; }
 
         /// <summary>
         /// The URL of the .sporemod file download.
         /// </summary>
-        public Uri? DownloadUrl { get; init; }
+        public Uri? DownloadUrl { get; }
 
-        public ModListing(XElement xmlModIdentity, string author, Uri repositoryUrl, Uri? projectUrl, Uri? downloadUrl)
+        public ModListing(XElement xmlModIdentity, Version? version, string? description, string author, Uri? repositoryUrl, Uri? projectUrl, Uri? downloadUrl)
         {
-            InstallerSystemVersion = Version.Parse(xmlModIdentity.Attribute("installerSystemVersion").Value);
+            ModIdentity = new XmlModIdentity(xmlModIdentity);
 
-            // If other Mod Identity XML versions are introduced, need to check that here
-
-            // TODO: Rewrite all of this because it is very broken
-            //       - Need to handle cases where some (or all) of these values are missing
-
-            // Possibly move Mod Identity out to its own class entirely
-
-            DisplayName = xmlModIdentity.Attribute("displayName").Value;
-            UniqueName = xmlModIdentity.Attribute("unique").Value;
-            Description = xmlModIdentity.Attribute("description").Value;
-
-            Version = Version.Parse(xmlModIdentity.Attribute("modVersion").Value);
-            DllsBuild = Version.Parse(xmlModIdentity.Attribute("dllsBuild").Value);
-
-            IsExperimental = (bool)xmlModIdentity.Attribute("isExperimental");
-            RequiresGalaxyReset = (bool)xmlModIdentity.Attribute("requiresGalaxyReset");
-            CausesSaveDataDependency = (bool)xmlModIdentity.Attribute("causesSaveDataDependency");
+            // Prefer version and description from Mod Identity, if present
+            Version ??= version;
+            Description ??= description;
 
             Author = author;
 
             RepositoryUrl = repositoryUrl;
             ProjectUrl = projectUrl;
-            DownloadUrl = downloadUrl;
+
+            // Make sure download URL is valid (ends with .sporemod or .package)
+            if (downloadUrl is not null && (downloadUrl.AbsoluteUri.EndsWith(".sporemod") || downloadUrl.AbsoluteUri.EndsWith(".package")))
+            {
+                DownloadUrl = downloadUrl;
+            }
         }
     }
 }
