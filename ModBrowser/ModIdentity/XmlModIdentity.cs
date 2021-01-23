@@ -33,7 +33,7 @@ namespace SporeCommunity.ModBrowser.ModIdentity
         /// <summary>
         /// The minimum version of the Spore ModAPI that is required for this mod.
         /// </summary>
-        public Version DllsBuild { get; }
+        public Version? DllsBuild { get; }
 
         /// <summary>
         /// Whether this mod can be disabled by the user.
@@ -129,7 +129,7 @@ namespace SporeCommunity.ModBrowser.ModIdentity
             Description = ParseOptionalString("description");
 
             ModVersion = ParseOptionalVersion("modVersion"); // Prerelease, subject to change
-            DllsBuild = ParseVersion("dllsBuild");
+            DllsBuild = ParseOptionalVersion("dllsBuild");
 
             CanDisableMod = ParseOptionalBool("canDisableMod"); // Prerelease, subject to change
             HasCustomInstaller = ParseOptionalBool("hasCustomInstaller"); // Does not exist in InstallerSystemVersion 1.0.0.0
