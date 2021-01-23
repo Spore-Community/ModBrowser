@@ -8,7 +8,7 @@
 
         @if (Mod.LastUpdatedDate is not null)
         {
-            <p class="mod-version">Updated @Mod.LastUpdatedDate (version @Mod.Version) - @Mod.DownloadCount downloads</p>
+            <p class="mod-version">Updated @Mod.LastUpdatedDate?.ToShortDateString() (version @Mod.Version) - @Mod.DownloadCount downloads</p>
         }
         else
         {

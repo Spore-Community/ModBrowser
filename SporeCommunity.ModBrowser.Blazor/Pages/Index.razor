@@ -57,6 +57,12 @@ else
         try
         {
             mods = await github.SearchModsAsync(searchTerm);
+
+            // When listing all mods, sort by download count
+            if(searchTerm.Length == 0)
+            {
+                mods = mods.OrderByDescending(mod => mod.DownloadCount).ToList();
+            }
         }
         catch (Exception e)
         {
