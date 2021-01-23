@@ -37,15 +37,15 @@
         </ul>
 
         <div class="mod-buttons">
-            @if (Mod.RepositoryUrl is not null)
-            {
-                <a target="_blank" rel="noopener noreferrer" href="@Mod.RepositoryUrl"><button>GitHub</button></a>
-            }
+            <button class="accent-green-bg" @onclick="OpenDownloadDialog" disabled="@Mod.DownloadUrl is null">Download</button>
             @if (Mod.ProjectUrl is not null)
             {
                 <a target="_blank" rel="noopener noreferrer" href="@Mod.ProjectUrl"><button>Website</button></a>
             }
-            <button class="accent-green-bg" @onclick="OpenDownloadDialog" disabled="@Mod.DownloadUrl is null">Download</button>
+            @if (Mod.RepositoryUrl is not null)
+            {
+                <a target="_blank" rel="noopener noreferrer" href="@Mod.RepositoryUrl"><button>GitHub</button></a>
+            }
         </div>
     }
 </div>
