@@ -48,7 +48,18 @@ namespace SporeCommunity.ModBrowser.GithubApi
         public async Task<XElement?> GetModIdentityAsync()
         {
             var file = await GetFileAsync("ModInfo.xml");
-            return file is null ? null : XElement.Parse(file);
+
+            if (file is null) return null;
+
+            try
+            {
+                return XElement.Parse(file);
+            }
+            catch (Exception)
+            {
+                // If XML doc was invalid, return null
+                return null;
+            }
         }
 
         public async Task<string?> GetReadmeAsync() => await GetFileAsync("README.md");
