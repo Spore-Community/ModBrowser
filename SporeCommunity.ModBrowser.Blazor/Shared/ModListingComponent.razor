@@ -37,7 +37,7 @@
         </ul>
 
         <div class="mod-buttons">
-            <button class="accent-green-bg" @onclick="OpenDownloadDialog" disabled="@Mod.DownloadUrl is null">Download</button>
+            <button class="accent-green-bg" @onclick="OpenDownloadDialog" disabled="@IsDownloadUnavailable">Download</button>
             @if (Mod.ProjectUrl is not null)
             {
                 <a target="_blank" rel="noopener noreferrer" href="@Mod.ProjectUrl"><button>Website</button></a>
@@ -85,6 +85,8 @@
 
     [Parameter]
     public DateTime Updated { get; init; } = DateTime.Now;
+
+    public bool IsDownloadUnavailable => Mod?.DownloadUrl is null;
 
     private async void OpenDownloadUrl()
     {
