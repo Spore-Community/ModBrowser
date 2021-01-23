@@ -88,7 +88,7 @@
 
     public bool IsDownloadUnavailable => Mod?.DownloadUrl is null;
 
-    public string? FileName => Mod?.DownloadUrl?.LocalPath;
+    public string? FileName => Mod?.DownloadUrl?.Segments.Last();
 
     private async void OpenDownloadUrl()
     {
