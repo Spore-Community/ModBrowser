@@ -113,7 +113,7 @@ namespace SporeCommunity.ModBrowser.ModIdentity
             // Parse an optional boolean (defaulting to false) from XML doc
             bool ParseOptionalBool(string attributeName)
             {
-                var value = ParseString(attributeName);
+                var value = ParseOptionalString(attributeName);
 
                 if (value is null) return false;
 
