@@ -43,8 +43,17 @@ namespace SporeCommunity.ModBrowser.GithubApi
         public DateTime Updated { get; }
         public Uri? ProjectUrl { get; }
 
+        /// <summary>
+        /// Gets a file in this repository's default branch.
+        /// </summary>
+        /// <param name="path">The file path, with no leading slash.</param>
+        /// <returns>A string containing the raw contents of the file, or null if the file did not exist.</returns>
         private async Task<string?> GetFileAsync(string path) => await client.GetFileAsync(Owner, Name, path);
 
+        /// <summary>
+        /// Gets the XML Mod Identity (ModInfo.xml) file in this repository.
+        /// </summary>
+        /// <returns>The XML file, or null if it was missing or malformed.</returns>
         public async Task<XElement?> GetModIdentityAsync()
         {
             var file = await GetFileAsync("ModInfo.xml");
@@ -62,9 +71,17 @@ namespace SporeCommunity.ModBrowser.GithubApi
             }
         }
 
+        /// <summary>
+        /// Gets the readme.md file in this repository.
+        /// </summary>
+        /// <returns>The readme file, or null if it was missing.</returns>
         public async Task<string?> GetReadmeAsync() => await GetFileAsync("README.md");
 
-        public async Task<(Uri? url, string? version)?> GetDownloadAsync()
+        /// <summary>
+        /// Gets the latest released asset from GitHub Releases.
+        /// </summary>
+        /// <returns>The asset, or null if there are no releases.</returns>
+        public async Task<Asset?> GetLatestAssetAsync()
         {
             var endpoint = $"repos/{Owner}/{Name}/releases/latest";
             try
@@ -74,15 +91,33 @@ namespace SporeCommunity.ModBrowser.GithubApi
                 var url = (string?)json["assets"]?[0]?["browser_download_url"];
                 var uri = Uri.TryCreate(url, UriKind.Absolute, out var result) ? result : null;
 
-                var version = (string?)json["tag_name"];
+                var version = (string)json["tag_name"]!;
 
-                return (url: uri, version);
+                var publishedAt = DateTime.ParseExact((string)json["published_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+
+                var downloadCount = (int?)json["assets"]?[0]?["download_count"];
+
+                return new Asset()
+                {
+                    DownloadUrl = uri,
+                    Version = version,
+                    PublishedAt = publishedAt,
+                    DownloadCount = downloadCount
+                };
             }
-            catch
+            catch (GithubApiException)
             {
                 // Runs when no releases were found
                 return null;
             }
+        }
+
+        public struct Asset
+        {
+            public Uri? DownloadUrl { get; init; }
+            public string Version { get; init; }
+            public DateTime PublishedAt { get; init; }
+            public int? DownloadCount { get; init; }
         }
     }
 }

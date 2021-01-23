@@ -61,7 +61,17 @@ namespace SporeCommunity.ModBrowser
         /// </summary>
         public Uri? DownloadUrl { get; }
 
-        public ModListing(XElement xmlModIdentity, Version? version, string? description, string author, Uri? repositoryUrl, Uri? projectUrl, Uri? downloadUrl)
+        /// <summary>
+        /// Gets the date and time that this version of the mod was uploaded.
+        /// </summary>
+        public DateTime? LastUpdatedDate { get; }
+
+        /// <summary>
+        /// The number of times this version of the mod has been downloaded.
+        /// </summary>
+        public int? DownloadCount { get; }
+
+        public ModListing(XElement xmlModIdentity, Version? version, string? description, string author, Uri? repositoryUrl, Uri? projectUrl, Uri? downloadUrl, DateTime? lastUpdated, int? downloadCount)
         {
             ModIdentity = new XmlModIdentity(xmlModIdentity);
 
@@ -79,6 +89,9 @@ namespace SporeCommunity.ModBrowser
             {
                 DownloadUrl = downloadUrl;
             }
+
+            LastUpdatedDate = lastUpdated;
+            DownloadCount = downloadCount;
         }
     }
 }

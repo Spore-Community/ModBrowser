@@ -60,11 +60,10 @@ namespace SporeCommunity.ModBrowser.GithubApi
             var modIdentity = await repository.GetModIdentityAsync();
 
             // Get download info and URL
-            var download = await repository.GetDownloadAsync();
-            var downloadUrl = download?.url;
+            var asset = await repository.GetLatestAssetAsync();
 
             // Get download version
-            var versionString = download?.version;
+            var versionString = asset?.Version;
             Version? version = null;
             if(versionString is not null)
             {
@@ -80,7 +79,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
 
             try
             {
-                var listing = new ModListing(modIdentity, version, repository.Description, repository.Owner, repository.RepositoryUrl, repository.ProjectUrl, downloadUrl);
+                var listing = new ModListing(modIdentity, version, repository.Description, repository.Owner, repository.RepositoryUrl, repository.ProjectUrl, asset?.DownloadUrl, asset?.PublishedAt, asset?.DownloadCount);
                 return listing;
             }
             catch (ModAttributeException)
