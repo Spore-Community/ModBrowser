@@ -258,13 +258,16 @@ article h1:first-of-type {
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 10;
     height: 100vh;
     width: 100vw;
     background: rgba(0, 0, 0, 0.75);
 }
 
 .dialog {
-    position: relative;
+    position: fixed;
+    left: 0;
+    right: 0;
     width: 512px;
     margin: auto;
     padding: 16px;
