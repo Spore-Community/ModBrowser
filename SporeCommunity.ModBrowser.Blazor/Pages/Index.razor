@@ -67,6 +67,8 @@ else
         catch (Exception e)
         {
             errorMessage = e.Message;
+            Console.WriteLine("Spore Mod Browser encountered an error searching for mods. If requested, please provide the information below.")
+            Console.WriteLine(e.ToString());
         }
         isLoading = false;
     }
