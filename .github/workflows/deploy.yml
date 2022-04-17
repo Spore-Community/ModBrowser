@@ -32,11 +32,11 @@ jobs:
     - name: Add readme file
       run: wget -P ${{ env.PUBLISH_PATH }} "https://gist.githubusercontent.com/Kade-N/b2dece4553f9900090fe3ce271d73048/raw/474ada9e5805ade145bcef79cf3d0c4bc0ecac2a/README.md"
 
-    - name: Rewrite base href
-      uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
-      with:
-        html_path: ${{ env.PUBLISH_PATH }}/index.html
-        base_href: /ModBrowser/
+#    - name: Rewrite base href
+#      uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
+#      with:
+#        html_path: ${{ env.PUBLISH_PATH }}/index.html
+#        base_href: /ModBrowser/
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3.7.3
