@@ -16,7 +16,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// <summary>
         /// The HTTP client used to communicate witth the GitHub web API.
         /// </summary>
-        private readonly HttpClient HttpClient = new HttpClient() { BaseAddress = new Uri("https://api.github.com/") };
+        private readonly HttpClient HttpClient = new HttpClient() { BaseAddress = new Uri("https://sporemodbrowser-gh-api.kade.workers.dev/") };
 
         /// <summary>
         /// Creates a new HTTP client for accessing the GitHub web API.
