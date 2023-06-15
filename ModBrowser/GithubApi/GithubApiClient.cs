@@ -72,7 +72,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
         public async Task<IEnumerable<Repository>> SearchForRepositoriesAsync(string searchTerm = "")
         {
             var endpoint = "search/repositories";
-            var query = "q=" + searchTerm;
+            var query = "q=" + searchTerm + "&per_page=1000";
             var json = await GetJsonAsync(endpoint, query);
 
             // If above line didn't raise an exception, the contents will be present, so this cannot be null
