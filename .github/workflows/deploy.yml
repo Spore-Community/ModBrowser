@@ -44,7 +44,7 @@ jobs:
 #        base_href: /ModBrowser/
 
     - name: Configure URL
-      run: echo "mods.sporecommunity.com" > CNAME
+      run: echo "mods.sporecommunity.com" > ${{ env.PUBLISH_PATH }}/CNAME
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
