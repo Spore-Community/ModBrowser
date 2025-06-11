@@ -13,9 +13,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v4
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -30,7 +30,7 @@ jobs:
       run: wget -P ${{ env.PUBLISH_PATH }} "https://raw.githubusercontent.com/rafgraph/spa-github-pages/gh-pages/404.html"
 
     - name: Add readme file
-      run: wget -P ${{ env.PUBLISH_PATH }} "https://gist.githubusercontent.com/Kade-N/b2dece4553f9900090fe3ce271d73048/raw/474ada9e5805ade145bcef79cf3d0c4bc0ecac2a/README.md"
+      run: wget -P ${{ env.PUBLISH_PATH }} "https://gist.githubusercontent.com/Kade-N/b2dece4553f9900090fe3ce271d73048/raw/README.md"
 
 #    - name: Rewrite base href
 #      uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
@@ -39,7 +39,7 @@ jobs:
 #        base_href: /ModBrowser/
 
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3.7.3
+      uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ${{ env.PUBLISH_PATH }}
