@@ -1,20 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <TargetFramework>netstandard1.1</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <AssemblyName>SporeCommunity.ModBrowser</AssemblyName>
     <RootNamespace>SporeCommunity.ModBrowser</RootNamespace>
     <PackageProjectUrl>https://github.com/Spore-Community/ModBrowser</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Spore-Community/ModBrowser</RepositoryUrl>
-    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.ValueTuple" Version="4.6.1" />
   </ItemGroup>
 
 </Project>
