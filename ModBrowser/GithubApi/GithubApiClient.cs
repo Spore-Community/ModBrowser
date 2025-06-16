@@ -16,7 +16,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// <summary>
         /// The HTTP client used to communicate witth the GitHub web API.
         /// </summary>
-        private readonly HttpClient HttpClient = new HttpClient() { BaseAddress = new Uri("https://sporemodbrowser-gh-api.kade.workers.dev/") };
+        private readonly HttpClient HttpClient = new() { BaseAddress = new Uri("https://sporemodbrowser-gh-api.kade.workers.dev/") };
 
         /// <summary>
         /// Creates a new HTTP client for accessing the GitHub web API.
@@ -106,11 +106,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
         public async Task<string?> GetFileAsync(string endpoint)
         {
             // Construct the request
-            var request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri(HttpClient.BaseAddress, endpoint),
-                Method = HttpMethod.Get
-            };
+            var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
             request.Headers.Accept.Clear();
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3.raw"));
 
