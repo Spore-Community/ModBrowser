@@ -18,20 +18,16 @@ namespace SporeCommunity.ModBrowser.GithubApi
             client = new(userAgent);
         }
 
-        public async Task<List<ModListing>> SearchModsAsync(string searchTerm = "")
+        public async IAsyncEnumerable<ModListing> SearchModsAsync(string searchTerm = "")
         {
             var repos = await SearchForSporeModRepositoriesAsync(searchTerm);
-
-            var mods = new List<ModListing>();
 
             foreach (var repo in repos)
             {
                 var modListing = await GetModListingFromRepositoryAsync(repo);
                 if (modListing is not null)
-                    mods.Add(modListing);
+                    yield return modListing;
             }
-
-            return mods;
         }
 
         /// <summary>

@@ -12,6 +12,6 @@ namespace SporeCommunity.ModBrowser
         /// </summary>
         /// <param name="searchTerm">The term to search for.</param>
         /// <returns>A list of Spore mods tthat match the given search term.</returns>
-        public Task<List<ModListing>> SearchModsAsync(string searchTerm = "");
+        public IAsyncEnumerable<ModListing> SearchModsAsync(string searchTerm = "");
     }
 }
