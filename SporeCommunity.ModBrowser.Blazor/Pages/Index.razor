@@ -39,13 +39,19 @@ else
 
 	private GithubModSearchEngine github = new("Spore-Community/ModBrowser");
 
-	[SupplyParameterFromQuery]
+	[SupplyParameterFromQuery(Name = "search")]
 	private string searchTerm { get; set; } = "";
 
 	private List<ModListing> mods = new();
 
 	protected override async Task OnInitializedAsync()
 	{
+		// If the search term is empty, we want to list all mods
+		if(string.IsNullOrWhiteSpace(searchTerm))
+		{
+			searchTerm = "";
+		}
+
 		await ExecuteSearch();
 	}
 
