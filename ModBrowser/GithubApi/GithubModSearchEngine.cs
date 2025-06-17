@@ -50,10 +50,15 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// <returns>The Mod Listing for the Spore mod, or null if the repository does not contain a valid ModInfo.xml file.</returns>
         private static async Task<ModListing?> GetModListingFromRepositoryAsync(Repository repository)
         {
-            var modIdentity = await repository.GetModIdentityAsync();
+            var modIdentityTask = repository.GetModIdentityAsync();
 
             // Get download info and URL
-            var asset = await repository.GetLatestAssetAsync();
+            var assetTask = repository.GetLatestAssetAsync();
+
+            // Run concurrently
+            await Task.WhenAll(modIdentityTask, assetTask);
+            var modIdentity = await modIdentityTask;
+            var asset = await assetTask;
 
             // Get download version
             var versionString = asset?.Version;
