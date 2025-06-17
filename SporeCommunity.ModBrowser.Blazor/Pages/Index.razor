@@ -15,7 +15,7 @@
 	<SupportInformation />
 	<p>@errorMessage</p>
 }
-else if (searchTerm.Length > 0 && mods.Count == 0)
+else if (!isLoading && mods.Count == 0)
 {
 	<p>No mods were found. Try using different search terms.</p>
 }
