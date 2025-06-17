@@ -4,7 +4,7 @@
 <MainNavButtons />
 
 <form @onsubmit="@ExecuteSearch">
-	<input @bind="searchTerm" placeholder="Search for mods">
+	<input @bind="SearchTerm" placeholder="Search for mods">
 	<button type="submit">Search</button>
 </form>
 
@@ -40,18 +40,13 @@ else
 	private GithubModSearchEngine github = new("Spore-Community/ModBrowser");
 
 	[SupplyParameterFromQuery(Name = "search")]
-	private string searchTerm { get; set; } = "";
+	private string SearchTerm { get => _searchTerm; set => _searchTerm = value ?? ""; }
+	private string _searchTerm = "";
 
 	private List<ModListing> mods = new();
 
 	protected override async Task OnInitializedAsync()
 	{
-		// If the search term is empty, we want to list all mods
-		if(string.IsNullOrWhiteSpace(searchTerm))
-		{
-			searchTerm = "";
-		}
-
 		await ExecuteSearch();
 	}
 
@@ -61,12 +56,12 @@ else
 		mods.Clear();
 		try
 		{
-			await foreach (var mod in github.SearchModsAsync(searchTerm))
+			await foreach (var mod in github.SearchModsAsync(SearchTerm))
 			{
 				mods.Add(mod);
 
 				// When listing all mods, sort by download count
-				if (searchTerm.Length == 0)
+				if (SearchTerm.Length == 0)
 				{
 					mods = mods.OrderByDescending(mod => mod.DownloadCount).ToList();
 				}
