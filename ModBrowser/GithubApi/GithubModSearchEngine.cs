@@ -6,18 +6,13 @@ using System.Threading.Tasks;
 
 namespace SporeCommunity.ModBrowser.GithubApi
 {
-    public class GithubModSearchEngine : IModSearchEngine
+    /// <summary>
+    /// Creates a new GitHub client for searching for Spore mods.
+    /// </summary>
+    /// <param name="userAgent">A User-Agent header. GitHub requires that you provide your GitHub username, or name of the application, so they can contact you if there are problems.</param>
+    public class GithubModSearchEngine(string userAgent) : IModSearchEngine
     {
-        private readonly GithubApiClient client;
-
-        /// <summary>
-        /// Creates a new GitHub client for searching for Spore mods.
-        /// </summary>
-        /// <param name="userAgent">A User-Agent header. GitHub requires that you provide your GitHub username, or name of the application, so they can contact you if there are problems.</param>
-        public GithubModSearchEngine(string userAgent)
-        {
-            client = new(userAgent);
-        }
+        private readonly GithubApiClient client = new(userAgent);
 
         public async IAsyncEnumerable<ModListing> SearchModsAsync(string searchTerm = "")
         {
@@ -53,7 +48,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// </summary>
         /// <param name="repository">The GitHub repository containing the Spore mod.</param>
         /// <returns>The Mod Listing for the Spore mod, or null if the repository does not contain a valid ModInfo.xml file.</returns>
-        private async Task<ModListing?> GetModListingFromRepositoryAsync(Repository repository)
+        private static async Task<ModListing?> GetModListingFromRepositoryAsync(Repository repository)
         {
             var modIdentity = await repository.GetModIdentityAsync();
 
@@ -66,7 +61,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
             if(versionString is not null)
             {
                 versionString = versionString.Replace("v", "").Trim();
-                Version.TryParse(versionString, out version);
+                _ = Version.TryParse(versionString, out version);
             }
 
             if (modIdentity is null)
