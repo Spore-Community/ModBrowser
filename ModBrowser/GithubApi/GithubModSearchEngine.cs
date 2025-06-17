@@ -1,6 +1,7 @@
 ﻿using SporeCommunity.ModBrowser.ModIdentity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SporeCommunity.ModBrowser.GithubApi
@@ -22,9 +23,10 @@ namespace SporeCommunity.ModBrowser.GithubApi
         {
             var repos = await SearchForSporeModRepositoriesAsync(searchTerm);
 
-            foreach (var repo in repos)
+            var tasks = from repo in repos select GetModListingFromRepositoryAsync(repo);
+
+            foreach (var modListing in await Task.WhenAll(tasks))
             {
-                var modListing = await GetModListingFromRepositoryAsync(repo);
                 if (modListing is not null)
                     yield return modListing;
             }
