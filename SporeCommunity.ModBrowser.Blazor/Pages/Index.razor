@@ -5,7 +5,7 @@
 
 <form @onsubmit="@ExecuteSearch">
 	<input @bind="searchTerm" placeholder="Search for mods">
-	<button type="submit" disabled=@isLoading>Search</button>
+	<button type="submit">Search</button>
 </form>
 
 @if (errorMessage is not null)
