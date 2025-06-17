@@ -39,7 +39,8 @@ else
 
 	private GithubModSearchEngine github = new("Spore-Community/ModBrowser");
 
-	private string searchTerm = "";
+	[SupplyParameterFromQuery]
+	private string searchTerm { get; set; } = "";
 
 	private List<ModListing> mods = new();
 
