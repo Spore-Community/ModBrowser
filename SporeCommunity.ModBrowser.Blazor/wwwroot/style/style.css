@@ -16,7 +16,7 @@ body {
 
 #app {
     position: relative;
-    min-height: calc(100vh - 147px);
+    min-height: calc(100vh - 171px);
     margin: 0 8px;
     background: var(--spore-white);
     border-radius: 24px;
