@@ -78,7 +78,15 @@ namespace SporeCommunity.ModBrowser.ModIdentity
             // Parse an optional string from XML doc
             string? ParseOptionalString(string attributeName)
             {
-                return xmlDocument.Attribute(attributeName)?.Value;
+                var value = xmlDocument.Attribute(attributeName)?.Value;
+
+                // If the value starts with $SPOREMOD, it is a placeholder and should be treated as not present
+                if (value is not null && value.StartsWith("$SPOREMOD"))
+                {
+                    return null;
+                }
+
+                return value;
             }
 
             // Parse a required version from XML doc
