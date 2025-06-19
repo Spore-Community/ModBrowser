@@ -62,11 +62,15 @@ namespace SporeCommunity.ModBrowser.GithubApi
 
             // Get download version
             var versionString = asset?.Version;
-            Version? version = null;
-            if(versionString is not null)
+            if (versionString is not null)
             {
-                versionString = versionString.Replace("v", "").Trim();
-                _ = Version.TryParse(versionString, out version);
+                // Remove leading 'v' if present
+                if (versionString.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+                {
+                    versionString = versionString[1..];
+                }
+
+                versionString = versionString.Trim();
             }
 
             if (modIdentity is null)
@@ -77,7 +81,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
 
             try
             {
-                var listing = new ModListing(modIdentity, version, repository.Description, repository.Owner, repository.RepositoryUrl, repository.ProjectUrl, asset?.DownloadUrl, asset?.PublishedAt, asset?.DownloadCount);
+                var listing = new ModListing(modIdentity, versionString, repository.Description, repository.Owner, repository.RepositoryUrl, repository.ProjectUrl, asset?.DownloadUrl, asset?.PublishedAt, asset?.DownloadCount);
                 return listing;
             }
             catch (ModAttributeException)

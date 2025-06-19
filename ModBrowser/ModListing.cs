@@ -19,7 +19,7 @@ namespace SporeCommunity.ModBrowser
         /// <summary>
         /// The version number of this mod.
         /// </summary>
-        public Version? Version { get; }
+        public string? Version { get; }
 
         /// <summary>
         /// A short description of this mod's features.
@@ -71,12 +71,12 @@ namespace SporeCommunity.ModBrowser
         /// </summary>
         public int? DownloadCount { get; }
 
-        public ModListing(XElement xmlModIdentity, Version? version, string? description, string author, Uri? repositoryUrl, Uri? projectUrl, Uri? downloadUrl, DateTime? lastUpdated, int? downloadCount)
+        public ModListing(XElement xmlModIdentity, string? version, string? description, string author, Uri? repositoryUrl, Uri? projectUrl, Uri? downloadUrl, DateTime? lastUpdated, int? downloadCount)
         {
             ModIdentity = new XmlModIdentity(xmlModIdentity);
 
             // Prefer version and description from Mod Identity, if present
-            Version = ModIdentity.ModVersion ?? version;
+            Version = ModIdentity.ModVersion?.ToString() ?? version;
             Description = ModIdentity.Description ?? description;
 
             Author = author;
