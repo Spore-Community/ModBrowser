@@ -64,7 +64,6 @@ nav a:hover {
 }
 
 #main-nav-buttons {
-    /* Need to hide this if window width is under 768px, and switch to menu button */
     width: 300px;
     position: absolute;
     top: -48px;
@@ -73,6 +72,18 @@ nav a:hover {
     border-bottom: 4px var(--spore-mid-space) solid;
     border-left: 4px var(--spore-mid-space) solid;
     border-radius: 0 0 0 24px;
+}
+
+@media (max-width: 768px) {
+    /* Quick and simple fix for mobile - not the prettiest but it works */
+    #main-nav-buttons {
+        width: calc(100vw - 16px);
+        position: relative;
+        top: -16px;
+        left: -24px;
+        border-left: 0;
+        border-radius: 0;
+    }
 }
 
 #main-nav-buttons a {
