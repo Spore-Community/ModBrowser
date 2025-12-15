@@ -6,48 +6,41 @@ env:
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
-    - uses: actions/cache@v4
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
+    steps:
+    - uses: actions/checkout@v5
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '9.0'
+        cache: true
 
     - name: Publish with .NET
-      run: dotnet publish -c Release -p:BlazorEnableCompression=false
+      run: dotnet publish -c Release
       working-directory: ./SporeCommunity.ModBrowser.Blazor
 
-    - name: Add 404 redirect file
-      run: wget -P ${{ env.PUBLISH_PATH }} "https://raw.githubusercontent.com/rafgraph/spa-github-pages/gh-pages/404.html"
+    - uses: actions/configure-pages@v5
 
-    - name: Add readme file
-      run: wget -P ${{ env.PUBLISH_PATH }} "https://gist.githubusercontent.com/Kade-N/b2dece4553f9900090fe3ce271d73048/raw/README.md"
-
-#    - name: Rewrite base href
-#      uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
-#      with:
-#        html_path: ${{ env.PUBLISH_PATH }}/index.html
-#        base_href: /ModBrowser/
-
-    - name: Configure URL
-      run: echo "mods.sporecommunity.com" > ${{ env.PUBLISH_PATH }}/CNAME
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v4
+      with:
+        path: ${{ env.PUBLISH_PATH }}
 
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ${{ env.PUBLISH_PATH }}
+      id: deployment
+      uses: actions/deploy-pages@v4
