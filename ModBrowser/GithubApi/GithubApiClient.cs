@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SporeCommunity.ModBrowser.GithubApi
@@ -24,12 +24,13 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// <param name="userAgent">A User-Agent header. GitHub requires that you provide your GitHub username, or name of the application, so they can contact you if there are problems.</param>
         public GithubApiClient(string userAgent)
         {
-            // Media types - API version
-            HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-            HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.mercy-preview+json")); // required for topic search
+            // Media type and API version
+            HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+            HttpClient.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
 
-            // TODO authentication with client ID and secret, to increase rate limits (no github login needed)
-            //HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "clientId:clientSecret");
+            // Authentication with client ID and secret, to increase rate limits (no github login needed)
+            // No longer used, as we authenticate through a proxy
+            // HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "clientId:clientSecret");
 
             // User agent - GitHub will track this
             HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
@@ -41,7 +42,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// <param name="endpoint">The endpoint to retrieve data from, with no leading slash.</param>
         /// <param name="query">The query string.</param>
         /// <returns>A JSON object representing the result.</returns>
-        public async Task<JObject> GetJsonAsync(string endpoint, string? query = null)
+        public async Task<JsonDocument> GetJsonAsync(string endpoint, string? query = null)
         {
             // Build uri
             string uri = endpoint;
@@ -61,7 +62,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
 
             // Return as JSON object
             var content = await result.Content.ReadAsStringAsync();
-            return JObject.Parse(content);
+            return JsonDocument.Parse(content);
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
             var json = await GetJsonAsync(endpoint, query);
 
             // If above line didn't raise an exception, the contents will be present, so this cannot be null
-            var repos = (JArray)json["items"]!;
+            var repos = json.RootElement.GetProperty("items").EnumerateArray();
 
             var repoQuery = from repo in repos
                             select new Repository(this, repo);
@@ -94,7 +95,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
             var endpoint = $"repos/{repositoryOwner}/{repositoryName}";
             var json = await GetJsonAsync(endpoint);
 
-            var repo = new Repository(this, json);
+            var repo = new Repository(this, json.RootElement);
             return repo;
         }
 
@@ -108,11 +109,10 @@ namespace SporeCommunity.ModBrowser.GithubApi
             // Construct the request
             var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
             request.Headers.Accept.Clear();
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3.raw"));
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.raw"));
 
             // Execute request and get resulting content
             var result = await HttpClient.SendAsync(request);
-            var content = await result.Content.ReadAsStringAsync();
 
             // Make sure status code was 200 OK
             if (!result.IsSuccessStatusCode)
@@ -124,7 +124,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
                 throw new GithubApiException(result);
             }
 
-            return content;
+            return await result.Content.ReadAsStringAsync();
         }
 
         /// <summary>

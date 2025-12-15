@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SporeCommunity.ModBrowser.GithubApi
@@ -88,15 +88,15 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// <summary>
         /// Gets the JSON content of the GitHub API response.
         /// </summary>
-        public async Task<JObject> GetJsonContent()
+        public async Task<JsonDocument> GetJsonContent()
         {
-            return JObject.Parse(await GetContent());
+            return JsonDocument.Parse(await GetContent());
         }
 
         public async Task<string> GetApiError()
         {
             var json = await GetJsonContent();
-            return (string)json["message"]!;
+            return json.RootElement.GetProperty("message").GetString()!;
         }
     }
 }

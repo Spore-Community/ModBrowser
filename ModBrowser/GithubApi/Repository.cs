@@ -1,5 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
+using System.Globalization;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -20,19 +21,19 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// </summary>
         /// <param name="client">The GitHub API client.</param>
         /// <param name="jsonData">The JSON data containing the information for this repository.</param>
-        internal Repository(GithubApiClient client, JToken jsonData)
+        internal Repository(GithubApiClient client, JsonElement jsonData)
         {
             this.client = client;
 
             // As long as the GitHub API is working as expected, these values cannot be null
             // But the compiler doesn't know that, so we need !
-            Name = (string)jsonData["name"]!;
-            Owner = (string)jsonData["owner"]!["login"]!;
-            RepositoryUrl = new Uri((string)jsonData["html_url"]!);
-            Description = (string?)jsonData["description"];
-            Created = DateTime.ParseExact((string)jsonData["created_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-            Updated = DateTime.ParseExact((string)jsonData["updated_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-            ProjectUrl = Uri.TryCreate((string?)jsonData["homepage"], UriKind.Absolute, out var homepage) ? homepage : null;
+            Name = jsonData.GetProperty("name").GetString()!;
+            Owner = jsonData.GetProperty("owner").GetProperty("login").GetString()!;
+            RepositoryUrl = new Uri(jsonData.GetProperty("html_url").GetString()!);
+            Description = jsonData.TryGetProperty("description", out var description) ? description.GetString() : null;
+            Created = DateTime.Parse(jsonData.GetProperty("created_at").GetString()!, null, DateTimeStyles.AdjustToUniversal).ToLocalTime();
+            Updated = DateTime.Parse(jsonData.GetProperty("updated_at").GetString()!, null, DateTimeStyles.AdjustToUniversal).ToLocalTime();
+            ProjectUrl = Uri.TryCreate(jsonData.TryGetProperty("homepage", out var homepageString) ? homepageString.GetString() : null, UriKind.Absolute, out var homepage) ? homepage : null;
         }
 
         public string Name { get; }
@@ -86,16 +87,19 @@ namespace SporeCommunity.ModBrowser.GithubApi
             var endpoint = $"repos/{Owner}/{Name}/releases/latest";
             try
             {
-                var json = await client.GetJsonAsync(endpoint);
+                using var jsonDoc = await client.GetJsonAsync(endpoint);
+                var json = jsonDoc.RootElement;
 
-                var url = (string?)json["assets"]?[0]?["browser_download_url"];
+                JsonElement? asset = json.TryGetProperty("assets", out var assets) && assets.GetArrayLength() > 0 ? assets[0] : null;
+
+                var url = asset?.GetProperty("browser_download_url").GetString();
                 var uri = Uri.TryCreate(url, UriKind.Absolute, out var result) ? result : null;
 
-                var version = (string)json["tag_name"]!;
+                var version = json.GetProperty("tag_name").GetString()!;
 
-                var publishedAt = DateTime.ParseExact((string)json["published_at"]!, "MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                var publishedAt = DateTime.Parse(json.GetProperty("published_at").GetString()!, null, DateTimeStyles.AdjustToUniversal).ToLocalTime();
 
-                var downloadCount = (int?)json["assets"]?[0]?["download_count"];
+                int? downloadCount = asset is JsonElement element && element.GetProperty("download_count").TryGetInt32(out var count) ? count : null;
 
                 return new Asset()
                 {
