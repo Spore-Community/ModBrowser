@@ -19,7 +19,7 @@ else if (!isLoading && mods.Count == 0)
 {
 	<p>No mods were found. Try using different search terms.</p>
 }
-else
+else if (!isLoading && errorMessage == null)
 {
 	<p>Showing @mods.Count mods</p>
 	@foreach (var mod in mods)
@@ -59,23 +59,26 @@ else
 			await foreach (var mod in github.SearchModsAsync(SearchTerm))
 			{
 				mods.Add(mod);
+			}
 
-				// When listing all mods, sort by download count
-				if (SearchTerm.Length == 0)
-				{
-					mods = mods.OrderByDescending(mod => mod.DownloadCount).ToList();
-				}
-
-				// Refresh UI
-				StateHasChanged();
+			// When listing all mods, sort by download count
+			if (SearchTerm.Length == 0)
+			{
+				mods = mods.OrderByDescending(mod => mod.DownloadCount).ToList();
 			}
 		}
 		catch (Exception e)
 		{
+			mods.Clear();
+
 			errorMessage = e.Message;
 			Console.WriteLine("Spore Mod Browser encountered an error searching for mods. If requested, please provide the information below.");
 			Console.WriteLine(e.ToString());
 		}
+
 		isLoading = false;
+
+		// Refresh UI
+		StateHasChanged();
 	}
 }
