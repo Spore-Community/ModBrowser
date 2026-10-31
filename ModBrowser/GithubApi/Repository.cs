@@ -26,9 +26,10 @@ namespace SporeCommunity.ModBrowser.GithubApi
                 if (assets[i].TryGetProperty("name", out JsonElement nameElement))
                 {
                     string? name = nameElement.GetString();
-                    if (name != null &&
-                        (name.ToLower().EndsWith(".package") ||
-                         name.ToLower().EndsWith(".sporemod")))
+                    string lowerCaseName = name == null ? "" : name.ToLowerInvariant();
+
+                    if (lowerCaseName.EndsWith(".package") ||
+                        lowerCaseName.EndsWith(".sporemod"))
                     {
                         return assets[i];
                     }
@@ -36,6 +37,36 @@ namespace SporeCommunity.ModBrowser.GithubApi
             }
 
             return null;
+        }
+
+        /// <summary>
+        ///     Returns whether release is not a draft or prerelease
+        /// </summary>
+        private bool IsValidRelease(JsonElement release)
+        {
+            if (release.TryGetProperty("draft", out JsonElement draftElement) &&
+                release.TryGetProperty("prerelease", out JsonElement prereleaseElement))
+            {
+                return !draftElement.GetBoolean() && !prereleaseElement.GetBoolean();
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///     Returns latest valid release
+        /// </summary>
+        private JsonElement GetLatestRelease(JsonElement releases)
+        {
+            for (int i = 0; i < releases.GetArrayLength(); i++)
+            {
+                if (IsValidRelease(releases[i]))
+                {
+                    return releases[i];
+                }
+            }
+
+            throw new Exception("no valid releases found!");
         }
 
         /// <summary>
@@ -48,7 +79,8 @@ namespace SporeCommunity.ModBrowser.GithubApi
 
             for (int i = 0; i < releases.GetArrayLength(); i++)
             {
-                if (releases[i].TryGetProperty("assets", out JsonElement assets))
+                if (IsValidRelease(releases[i]) &&
+                    releases[i].TryGetProperty("assets", out JsonElement assets))
                 {
                     JsonElement? asset = GetSporeModAsset(assets);
                     if (asset is JsonElement assetElement &&
@@ -136,7 +168,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
             try
             {
                 using var json = await client.GetJsonAsync(endpoint);
-                var releaseJson = json.RootElement[0];
+                var releaseJson = GetLatestRelease(json.RootElement);
 
                 JsonElement assets;
                 releaseJson.TryGetProperty("assets", out assets);
