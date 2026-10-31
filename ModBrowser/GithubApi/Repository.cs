@@ -17,6 +17,54 @@ namespace SporeCommunity.ModBrowser.GithubApi
         private readonly GithubApiClient client;
 
         /// <summary>
+        ///   Attempts to retrieve mod file asset
+        /// </summary>
+        private JsonElement? GetSporeModAsset(JsonElement assets)
+        {
+            for (int i = 0; i < assets.GetArrayLength(); i++)
+            {
+                if (assets[i].TryGetProperty("name", out JsonElement nameElement))
+                {
+                    string? name = nameElement.GetString();
+                    if (name != null &&
+                        (name.ToLower().EndsWith(".package") ||
+                         name.ToLower().EndsWith(".sporemod")))
+                    {
+                        return assets[i];
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        ///   Retrieves sum of all valid asset download count
+        /// </summary>
+        private int? GetDownloadCount(JsonElement releases)
+        {
+            bool hasCount = false;
+            int sum = 0;
+
+            for (int i = 0; i < releases.GetArrayLength(); i++)
+            {
+                if (releases[i].TryGetProperty("assets", out JsonElement assets))
+                {
+                    JsonElement? asset = GetSporeModAsset(assets);
+                    if (asset is JsonElement assetElement &&
+                        assetElement.TryGetProperty("download_count", out JsonElement downloadCountElement) &&
+                        downloadCountElement.TryGetInt32(out int assetDownloadCount))
+                    {
+                        sum += assetDownloadCount;
+                        hasCount = true;
+                    }
+                }
+            }
+
+            return hasCount ? sum : null;
+        }
+
+        /// <summary>
         /// Creates an instance for a GitHub repository from JSON data returned by the GitHub API.
         /// </summary>
         /// <param name="client">The GitHub API client.</param>
@@ -84,22 +132,25 @@ namespace SporeCommunity.ModBrowser.GithubApi
         /// <returns>The asset, or null if there are no releases.</returns>
         public async Task<Asset?> GetLatestAssetAsync()
         {
-            var endpoint = $"repos/{Owner}/{Name}/releases/latest";
+            var endpoint = $"repos/{Owner}/{Name}/releases";
             try
             {
-                using var jsonDoc = await client.GetJsonAsync(endpoint);
-                var json = jsonDoc.RootElement;
+                using var json = await client.GetJsonAsync(endpoint);
+                var releaseJson = json.RootElement[0];
 
-                JsonElement? asset = json.TryGetProperty("assets", out var assets) && assets.GetArrayLength() > 0 ? assets[0] : null;
+                JsonElement assets;
+                releaseJson.TryGetProperty("assets", out assets);
+
+                JsonElement? asset = GetSporeModAsset(assets);
 
                 var url = asset?.GetProperty("browser_download_url").GetString();
                 var uri = Uri.TryCreate(url, UriKind.Absolute, out var result) ? result : null;
 
-                var version = json.GetProperty("tag_name").GetString()!;
+                var version = releaseJson.GetProperty("tag_name").GetString()!;
 
-                var publishedAt = DateTime.Parse(json.GetProperty("published_at").GetString()!, null, DateTimeStyles.AdjustToUniversal).ToLocalTime();
+                var publishedAt = DateTime.Parse(releaseJson.GetProperty("published_at").GetString()!, null, DateTimeStyles.AdjustToUniversal).ToLocalTime();
 
-                int? downloadCount = asset is JsonElement element && element.GetProperty("download_count").TryGetInt32(out var count) ? count : null;
+                int? downloadCount = GetDownloadCount(json.RootElement);
 
                 return new Asset()
                 {
@@ -109,7 +160,7 @@ namespace SporeCommunity.ModBrowser.GithubApi
                     DownloadCount = downloadCount
                 };
             }
-            catch (GithubApiException)
+            catch (Exception)
             {
                 // Runs when no releases were found
                 return null;
