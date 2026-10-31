@@ -84,11 +84,7 @@ namespace SporeCommunity.ModBrowser
             RepositoryUrl = repositoryUrl;
             ProjectUrl = projectUrl;
 
-            // Make sure download URL is valid (ends with .sporemod or .package)
-            if (downloadUrl is not null && (downloadUrl.AbsoluteUri.EndsWith(".sporemod") || downloadUrl.AbsoluteUri.EndsWith(".package")))
-            {
-                DownloadUrl = downloadUrl;
-            }
+            DownloadUrl = downloadUrl;
 
             LastUpdatedDate = lastUpdated;
             DownloadCount = downloadCount;
